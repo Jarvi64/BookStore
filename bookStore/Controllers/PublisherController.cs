@@ -3,6 +3,7 @@ using bookStore.CustomeActionFilter;
 using bookStore.Models.Domain;
 using bookStore.Models.Dto;
 using bookStore.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -13,6 +14,7 @@ namespace bookStore.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PublisherController : ControllerBase
     {
         private readonly IPublisherRepository publisherRepository;
