@@ -1,8 +1,11 @@
 using bookStore.Data;
 using bookStore.Mappings;
+using bookStore.Models.Domain;
 using bookStore.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -27,8 +30,25 @@ builder.Services.AddScoped<IPublisherRepository,SQLPublisherRepository>();
 builder.Services.AddScoped<IAuthorRepository,SQLAuthorRepository>();
 builder.Services.AddScoped<IOrderRepository,SQLOrderRepository>();
 builder.Services.AddScoped<IOrderItemRepository,SQLOrderItemRepository>();
+builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
+
+builder.Services.AddIdentityCore<Customer>()
+    .AddTokenProvider<DataProtectorTokenProvider<Customer>>("BookStore")
+    .AddEntityFrameworkStores<BookStoreAuthDbContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequiredLength = 8;
+    options.Password.RequiredUniqueChars = 1;
+
+});
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).
     AddJwtBearer(options =>
